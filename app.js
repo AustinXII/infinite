@@ -407,6 +407,8 @@ fs.readFile('./config/ipbans.txt', function (err, data) {
 	}
 	Users.checkRangeBanned = Cidr.checker(rangebans);
 });
+//Required for money commands
+global.money = require('./custom/moneycommands.js').money;
 
 /*********************************************************
  * Start up the REPL server

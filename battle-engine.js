@@ -14,19 +14,26 @@ require('sugar');
 
 global.Config = require('./config/config.js');
 
-if (Config.crashguard) {
+/* if (Config.crashguard) {
 	// graceful crash - allow current battles to finish before restarting
 	process.on('uncaughtException', function (err) {
 		require('./crashlogger.js')(err, 'A simulator process');
-		/* var stack = ("" + err.stack).escapeHTML().split("\n").slice(0, 2).join("<br />");
+		var stack = ("" + err.stack).escapeHTML().split("\n").slice(0, 2).join("<br />");
 		if (Rooms.lobby) {
 			Rooms.lobby.addRaw('<div><b>THE SERVER HAS CRASHED:</b> ' + stack + '<br />Please restart the server.</div>');
 			Rooms.lobby.addRaw('<div>You will not be able to talk in the lobby or start new battles until the server restarts.</div>');
 		}
 		Config.modchat = 'crash';
-		Rooms.global.lockdown = true; */
+		Rooms.global.lockdown = true;
 	});
-}
+} */
+
+
+
+
+
+
+
 
 /**
  * Converts anything to an ID. An ID must have only lowercase alphanumeric
@@ -74,7 +81,7 @@ require('./repl.js').start('battle-engine-', process.pid, function (cmd) { retur
 
 // Receive and process a message sent using Simulator.prototype.send in
 // another process.
-process.on('message', function (message) {
+battleEngineFakeProcess.client.on('message', function (message) {
 	//console.log('CHILD MESSAGE RECV: "' + message + '"');
 	var nlIndex = message.indexOf("\n");
 	var more = '';
@@ -95,9 +102,9 @@ process.on('message', function (message) {
 
 				if (!require('./crashlogger.js')(fakeErr, 'A battle')) {
 					var ministack = ("" + err.stack).escapeHTML().split("\n").slice(0, 2).join("<br />");
-					process.send(data[0] + '\nupdate\n|html|<div class="broadcast-red"><b>A BATTLE PROCESS HAS CRASHED:</b> ' + ministack + '</div>');
+					battleEngineFakeProcess.client.send(data[0] + '\nupdate\n|html|<div class="broadcast-red"><b>A BATTLE PROCESS HAS CRASHED:</b> ' + ministack + '</div>');
 				} else {
-					process.send(data[0] + '\nupdate\n|html|<div class="broadcast-red"><b>The battle crashed!</b><br />Don\'t worry, we\'re working on fixing it.</div>');
+					battleEngineFakeProcess.client.send(data[0] + '\nupdate\n|html|<div class="broadcast-red"><b>The battle crashed!</b><br />Don\'t worry, we\'re working on fixing it.</div>');
 				}
 			}
 		}
@@ -4004,7 +4011,7 @@ Battle = (function () {
 	// Battle.prototype.receive in simulator.js (in another process).
 	Battle.prototype.send = function (type, data) {
 		if (Array.isArray(data)) data = data.join("\n");
-		process.send(this.id + "\n" + type + "\n" + data);
+		battleEngineFakeProcess.client.send(this.id + "\n" + type + "\n" + data);
 	};
 	// This function is called by this process's 'message' event.
 	Battle.prototype.receive = function (data, more) {

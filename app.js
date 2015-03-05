@@ -416,7 +416,6 @@ global.Poll = require('./core.js').core.poll();
 
 global.SysopAccess = require('./core.js').sysopAccess();
 
-global.Bot = require('./bot.js');
 /*********************************************************
  * Start up the REPL server
  *********************************************************/

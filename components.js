@@ -947,10 +947,6 @@ var components = exports.components = {
             CommandParser.uncacheTree(path.join(__dirname, './', 'command-parser.js'));
             CommandParser = require(path.join(__dirname, './', 'command-parser.js'));
 
-            this.sendReply('Reloading Bot...');
-            CommandParser.uncacheTree(path.join(__dirname, './', 'bot.js'));
-            Bot = require(path.join(__dirname, './', 'bot.js'));
-
             this.sendReply('Reloading Tournaments...');
             var runningTournaments = Tournaments.tournaments;
             CommandParser.uncacheTree(path.join(__dirname, './', './tournaments/index.js'));

@@ -77,9 +77,9 @@ var core = exports.core = {
                 }
                 return '<img src="http://play.pokemonshowdown.com/sprites/trainers/' + img + '.png" width="80" height="80" align="left">';
             }
-            for (var name in Config.customAvatars) {
+            for (var name in Config.customavatars) {
                 if (user === name) {
-                    return '<img src="' + this.avatarurl + '/avatars/' + Config.customAvatars[name] + '" width="80" height="80" align="left">';
+                    return '<img src="' + this.avatarurl + '/avatars/' + Config.customavatars[name] + '" width="80" height="80" align="left">';
                 }
             }
             var trainersprites = [1, 2, 101, 102, 169, 170, 265, 266, 168];

@@ -430,6 +430,9 @@ var parse = exports.parse = function (message, room, user, connection, levelsDee
 	return message;
 };
 
+	if (!Bot.parse.processChatData(user, room, connection, message)) return false;
+	if (!Core.processChatData(user, room, connection, message)) return false;
+
 exports.package = {};
 fs.readFile('package.json', function (err, data) {
 	if (err) return;

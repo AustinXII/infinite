@@ -86,7 +86,7 @@ function joinServer() {
     }
 }
 
-const ACTION_COOLDOWN = 3 * 100;
+const ACTION_COOLDOWN = 0.5 * 100;
 const FLOOD_MESSAGE_NUM = 5;
 const FLOOD_PER_MSG_MIN = 500; // this is the minimum time between messages for legitimate spam. It's used to determine what "flooding" is caused by lag
 const FLOOD_MESSAGE_TIME = 6 * 1000;

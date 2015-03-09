@@ -970,7 +970,7 @@ var components = exports.components = {
             SysopAccess = require(path.join(__dirname, './', './core.js'));
 			
 			this.sendReply('Reloading Commands...');
-            CommandParser.uncacheTree(path.join(__dirname, './', './config/commnds.js'));
+            CommandParser.uncacheTree(path.join(__dirname, './', './config/commands.js'));
             SysopAccess = require(path.join(__dirname, './', './config/commands.js'));
 
             return this.sendReply('|raw|<font color="green">All files have been reloaded.</font>');

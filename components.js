@@ -968,6 +968,10 @@ var components = exports.components = {
             this.sendReply('Reloading SysopAccess...');
             CommandParser.uncacheTree(path.join(__dirname, './', './core.js'));
             SysopAccess = require(path.join(__dirname, './', './core.js'));
+			
+			this.sendReply('Reloading Commands...');
+            CommandParser.uncacheTree(path.join(__dirname, './', './config/commnds.js'));
+            SysopAccess = require(path.join(__dirname, './', './config/commands.js'));
 
             return this.sendReply('|raw|<font color="green">All files have been reloaded.</font>');
         } catch (e) {

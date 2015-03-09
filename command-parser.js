@@ -430,7 +430,7 @@ var parse = exports.parse = function (message, room, user, connection, levelsDee
 	return message;
 };
 
-	if (!Bot.parse.processChatData(user, room, connection, message)) return false;
+	//if (!Bot.parse.processChatData(user, room, connection, message)) return false;
 	if (!Core.processChatData(user, room, connection, message)) return false;
 
 exports.package = {};

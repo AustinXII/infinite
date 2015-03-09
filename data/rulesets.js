@@ -575,6 +575,7 @@ exports.BattleFormats = {
 			}
 		}
 	},
+	
 	sametypeclause: {
 		effectType: 'Rule',
 		onStart: function () {

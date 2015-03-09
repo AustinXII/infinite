@@ -806,4 +806,3 @@ Validator = (function () {
 
 	return Validator;
 })();
-})();

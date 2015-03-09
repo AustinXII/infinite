@@ -570,7 +570,7 @@ exports.BattleFormats = {
 				typeTable = typeTable.intersect(template.types);
 				if (!typeTable.length) return ["Your team must share a type."];
 			}
-			if (format.id === 'monotype') {
+			/* if (format.id === 'monotype') {
 				// Very complex bans
 				if (typeTable.length > 1) return;
 				switch (typeTable[0]) {
@@ -587,7 +587,7 @@ exports.BattleFormats = {
 				case 'Water':
 					if (teamHas['damprock']) return ["Damp Rock is banned from Water monotype teams."];
 				}
-			}
+			} */
 		}
 	},
 	megarayquazabanmod: {

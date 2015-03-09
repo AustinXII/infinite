@@ -305,7 +305,7 @@ var commands = {
     },
 
     penislength: function (target, room, user) {
-        this.sendReply('8.5 inches from the base. Perv.');
+        this.sendReply('Perv.');
     },
 
     seen: function (target, room, user, connection) {

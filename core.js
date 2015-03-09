@@ -340,6 +340,7 @@ var core = exports.core = {
         'DansGame': 'http://107.161.19.92:8000/Twitch/DansGame.png',
         'Kreygasm': 'http://107.161.19.92:8000/Twitch/Kreygasm.png',
 		'Obama': 'http://107.161.19.92:8000/Twitch/obama.jpeg',
+		'Gaben': 'http://107.161.19.92:8000/Twitch/Gaben.png',
 		//Homophobia filter
 		'feg': 'http://107.161.19.92:8000/Twitch/feg.png'
     },

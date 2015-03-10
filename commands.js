@@ -576,6 +576,10 @@ var commands = exports.commands = {
 		if (!room.bannedUsers || !room.bannedIps) {
 			return this.sendReply("Room bans are not meant to be used in room " + room.id + ".");
 		}
+		var a = targetUser.name;
+                    if (a == "Kammi" || a == "Da Bic Boi" || a == "Da Bic Boi - Ⓐⓦⓐⓨ" || a == "Da Bic Boi - ⓦⓞⓡⓚⓘⓝⓖ" || a == "Infinite Bot" || a == "Infinite Bot - Ⓐⓦⓐⓨ" || a == "Infinite DDP Bot" || a== "Infinite DDP Bot - Ⓐⓦⓐⓨ" || a == "Not Da Bic Boi" || a == "Connor the Poodra" || a== "Not Da Bic Boi - Ⓐⓦⓐⓨ" ) {
+                            return this.sendReply('ACCESS DENIED.');
+                            }
 		if (room.bannedUsers[userid] || room.bannedIps[targetUser.latestIp]) return this.sendReply("User " + targetUser.name + " is already banned from room " + room.id + ".");
 		room.bannedUsers[userid] = true;
 		for (var ip in targetUser.ips) {

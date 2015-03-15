@@ -719,12 +719,18 @@ var components = exports.components = {
         Poll[room.id].display = '<h2>' + Poll[room.id].question + '&nbsp;&nbsp;<font size="1" color="#AAAAAA">/vote OPTION</font><br><font size="1" color="#AAAAAA">Poll started by <em>' + user.name + '</em></font><br><hr>&nbsp;&nbsp;&nbsp;&nbsp;' + pollOptions;
         room.add('|raw|<div class="infobox">' + Poll[room.id].display + '</div>');
     },
-
+	
+	tpoll: 'tierpoll',
     tierpoll: 'tierpoll',
 	tierpoll: function (target, room, user) {
         if (!this.can('announce')) return;
-        this.parse('/poll Tournament tier?, ' + Object.keys(Tools.data.Formats).filter(function (f) { return Tools.data.Formats[f].effectType === 'Format'; }).join(", "));
+        this.parse('/poll Tournament Tier, abcab ubers, abcab ou, randbats, ou, ubers, uu, ru, nu, pu, lc, customgame, random doubles, doubles, stabmons, almostanyability, challenge cup, hackmons, cc, cc1v1, 1v1, hackmons, balanced hackmons, inverse battle, ou mono, tier shift, mediocremons, random triples, random mono, hidden type, inheritance, Anything goes, Triples, random triples, stabmons, gen1random');
     },
+	
+	hv: 'helpvotes',
+        helpvotes: function(room, user, cmd){
+                return this.parse('/wall Remember to **vote** even if you don\'t want to battle; that way you\'re still voting for what tier battles you want to watch!');
+        },
 
     endpoll: function (target, room, user) {
         if (!this.can('announce')) return;

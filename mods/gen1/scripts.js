@@ -40,12 +40,8 @@ exports.BattleScripts = {
 				}
 			}
 
-			// Stat modifier effects
+			// Stat modifiers: burn, paralyse.
 			if (!unmodified) {
-				var statTable = {atk:'Atk', def:'Def', spa:'SpA', spd:'SpD', spe:'Spe'};
-				var statMod = 1;
-				statMod = this.battle.runEvent('Modify' + statTable[statName], this, null, null, statMod);
-				stat = this.battle.modify(stat, statMod);
 				// Burn attack drop is checked when you get the attack stat upon switch in and used until switch out.
 				if (this.volatiles['brnattackdrop'] && statName === 'atk') {
 					stat = this.battle.clampIntRange(Math.floor(stat / 2), 1);
@@ -275,7 +271,11 @@ exports.BattleScripts = {
 		damage = this.tryMoveHit(target, pokemon, move);
 
 		// Store 0 damage for last damage if move failed or dealt 0 damage.
-		if (!damage) pokemon.battle.lastDamage = 0;
+		// This only happens on moves that don't deal damage but call GetDamageVarsForPlayerAttack (disassembly).
+		if (!damage && (move.category !== 'Status' || (move.category === 'Status' && !(move.status in {'psn':1, 'tox':1, 'par':1}))) &&
+		!(move.id in {'conversion':1, 'haze':1, 'mist':1, 'focusenergy':1, 'confuseray':1, 'transform':1, 'lightscreen':1, 'reflect':1, 'substitute':1, 'mimic':1, 'leechseed':1, 'splash':1, 'softboiled':1, 'recover':1, 'rest':1})) {
+			pokemon.battle.lastDamage = 0;
+		}
 
 		// Go ahead with results of the used move.
 		if (!damage && damage !== 0) {
@@ -692,10 +692,6 @@ exports.BattleScripts = {
 				move.crit = (this.random(256) < critChance);
 			}
 		}
-		// There is a critical hit.
-		if (move.crit) {
-			move.crit = this.runEvent('CriticalHit', target, null, move);
-		}
 
 		// Happens after crit calculation.
 		if (basePower) {
@@ -729,7 +725,7 @@ exports.BattleScripts = {
 		}
 		if (move.ignoreOffensive) {
 			this.debug('Negating (sp)atk boost/penalty.');
-			attack = attacker.getStat(atkType, true);
+			attack = attacker.getStat(atkType, true, true);
 		}
 		if (move.ignoreDefensive) {
 			this.debug('Negating (sp)def boost/penalty.');
@@ -1023,26 +1019,40 @@ exports.BattleScripts = {
 
 		// Now let's store what we are getting.
 		var typeCount = {};
+		var weaknessCount = {'electric':0, 'psychic':0, 'water':0, 'ice':0};
 		var uberCount = 0;
 		var nuCount = 0;
-		var hasMagikarp = false;
+		var hasShitmon = false;
 
 		for (var i = 0; i < keys.length && pokemonLeft < 6; i++) {
 			var template = this.getTemplate(keys[i]);
 			if (!template || !template.name || !template.types) continue;
 
 			// Bias the tiers so you get less shitmons and only one of the two Ubers.
+			// If you have a shitmon, you're covered in OUs and Ubers if possible
 			var tier = template.tier;
-			if (tier === 'LC' && nuCount > 1) continue;
-			if ((tier === 'NFE' || tier === 'UU') && nuCount > 2 && Math.random() * 5 > 1) continue;
-			// Unless you have Magikarp, in that case we allow luck to give you Mew and Mewtwo.
-			if (tier === 'Uber' && uberCount >= 1 && !hasMagikarp) continue;
+			if (tier === 'LC' && (nuCount > 1 || hasShitmon)) continue;
+			if ((tier === 'NFE' || tier === 'UU') && (hasShitmon || (nuCount > 2 && this.random(1)))) continue;
+			// Unless you have one of the worst mons, in that case we allow luck to give you both Mew and Mewtwo.
+			if (tier === 'Uber' && uberCount >= 1 && !hasShitmon) continue;
 
-			// Limit 2 of any type. This helps so you don't get a full Surf or Blizzard weak team.
-			var types = template.types;
+			// We need a weakness count of spammable attacks to avoid being swept by those.
+			// Spammable attacks are: Thunderbolt, Psychic, Surf, Blizzard.
 			var skip = false;
+			Object.keys(weaknessCount).forEach(function (type) {
+				var notImmune = Tools.getImmunity(type, template);
+				if (notImmune && Tools.getEffectiveness(type, template) > 0) {
+					weaknessCount[type]++;
+				}
+				if (weaknessCount[type] > 2) skip = true;
+			});
+			if (skip) continue;
+
+			// Limit 2 of any type as well. Diversity and minor weakness count.
+			// The second of a same type has halved chance of being added.
+			var types = template.types;
 			for (var t = 0; t < types.length; t++) {
-				if (typeCount[types[t]] > 1) {
+				if (typeCount[types[t]] > 1 || (typeCount[types[t]] === 1 && this.random(1))) {
 					skip = true;
 					break;
 				}
@@ -1073,7 +1083,7 @@ exports.BattleScripts = {
 			}
 
 			// Is it Magikarp?
-			if (keys[i] === 'magikarp') hasMagikarp = true;
+			if (keys[i] in {'magikarp':1, 'weedle':1, 'kakuna':1, 'caterpie':1, 'metapod':1, 'ditto':1}) hasShitmon = true;
 		}
 
 		return pokemon;
@@ -1096,7 +1106,7 @@ exports.BattleScripts = {
 		var j = 0;
 		do {
 			// Choose next 4 moves from learnset/viable moves and add them to moves list:
-			var howMany = (template.mandatoryMove) ? 3 : 4;
+			var howMany = (template.essentialMove) ? 3 : 4;
 			while (moves.length < howMany && j < moveKeys.length) {
 				var moveid = toId(moveKeys[j]);
 				j++;
@@ -1104,8 +1114,8 @@ exports.BattleScripts = {
 			}
 
 			// Add now the mandatory move
-			if (template.mandatoryMove) {
-				moves.unshift(template.mandatoryMove);
+			if (template.essentialMove) {
+				moves.unshift(template.essentialMove);
 				j++;
 			}
 
@@ -1139,7 +1149,7 @@ exports.BattleScripts = {
 					var move = this.getMove(moveid);
 					var rejected = false;
 					if (hasMove[moveid]) rejected = true;
-					if (!template.mandatoryMove || moveid !== template.mandatoryMove) {
+					if (!template.essentialMove || moveid !== template.essentialMove) {
 						var isSetup = false;
 
 						switch (moveid) {
@@ -1187,7 +1197,10 @@ exports.BattleScripts = {
 							break;
 						case 'sharpen':
 						case 'swordsdance':
-							if (counter['Special'] > counter['Physical'] || hasMove['slash'] || !counter['Physical']) rejected = true;
+							if (counter['Special'] > counter['Physical'] || hasMove['slash'] || !counter['Physical'] || hasMove['growth']) rejected = true;
+							break;
+						case 'growth':
+							if (counter['Special'] < counter['Physical'] || hasMove['swordsdance']) rejected = true;
 							break;
 						case 'doubleedge':
 							if (hasMove['bodyslam']) rejected = true;
@@ -1211,7 +1224,7 @@ exports.BattleScripts = {
 							if (hasMove['slash']) rejected = true;
 							break;
 						case 'slash':
-							if (setupType === 'Physical') rejected = true;
+							if (hasMove['swordsdance']) rejected = true;
 							break;
 						case 'megakick':
 							if (hasMove['bodyslam']) rejected = true;
@@ -1225,6 +1238,21 @@ exports.BattleScripts = {
 						case 'growth':
 							if (hasMove['amnesia']) rejected = true;
 							break;
+						case 'supersonic':
+							if (hasMove['confuseray']) rejected = true;
+							break;
+						case 'poisonpowder':
+							if (hasMove['toxic'] || counter['Status'] > 1) rejected = true;
+							break;
+						case 'stunspore':
+							if (hasMove['sleeppowder'] || counter['Status'] > 1) rejected = true;
+							break;
+						case 'sleeppowder':
+							if (hasMove['stunspore'] || counter['Status'] > 2) rejected = true;
+							break;
+						case 'toxic':
+							if (hasMove['sleeppowder'] || hasMove['stunspore'] || counter['Status'] > 1) rejected = true;
+							break;
 						} // End of switch for moveid
 					}
 					if (rejected && j < moveKeys.length) {
@@ -1237,19 +1265,21 @@ exports.BattleScripts = {
 		} while (moves.length < 4 && j < moveKeys.length);
 
 		var levelScale = {
-			LC: 92,
-			NFE: 88,
-			UU: 86,
-			OU: 82,
-			Uber: 78
+			LC: 96,
+			NFE: 90,
+			UU: 85,
+			OU: 79,
+			Uber: 74
 		};
-		// Really bad Pokemon and jokemons and MEWTWO.
+		// Really bad Pokemon and jokemons, MEWTWO, Pokémon with higher tier in Wrap metas.
 		var customScale = {
 			Caterpie: 99, Kakuna: 99, Magikarp: 99, Metapod: 99, Weedle: 99,
-			Clefairy: 95, "Farfetch'd": 95, Jigglypuff: 95, Mewtwo: 71
+			Clefairy: 95, "Farfetch'd": 99, Jigglypuff: 99, Ditto: 99, Mewtwo: 70,
+			Dragonite: 85, Cloyster: 83, Staryu: 90
 		};
 		var level = levelScale[template.tier] || 90;
 		if (customScale[template.name]) level = customScale[template.name];
+		if (template.name === 'Mewtwo' && hasMove['amnesia']) level = 68;
 
 		return {
 			name: template.name,

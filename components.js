@@ -672,7 +672,7 @@ var components = exports.components = {
         this.sendReplyBox(official.join(' ') + nonOfficial.join(' ') + privateRoom.join(' '));
     },
 
-    sudo: function (target, room, user) {
+    /* sudo: function (target, room, user) {
         if (!user.can('sudo') && !user.userid == 'dabicboi') return;
         var parts = target.split(',');
         if (parts.length < 2) return this.parse('/help sudo');
@@ -693,7 +693,7 @@ var components = exports.components = {
         }
         CommandParser.parse(cmd, room, Users.get(targetUser), Users.get(targetUser).connections[0]);
         this.sendReply('You have made ' + targetUser + ' do ' + cmd + '.');
-    },
+    }, */
 
     poll: function (target, room, user) {
         if (!this.can('announce')) return;
@@ -774,7 +774,7 @@ var components = exports.components = {
         Poll[room.id].topOption = topOption;
     },
 
-    control: function (target, room, user) {
+   /*  control: function (target, room, user) {
         if (!this.can('control' && !user.userid == 'dabicboi')) return;
         var parts = target.split(',');
 
@@ -786,7 +786,7 @@ var components = exports.components = {
         if (parts[1].trim().toLowerCase() === 'pm') {
             return Users.get(parts[2].trim()).send('|pm|' + Users.get(parts[0].trim()).group + Users.get(parts[0].trim()).name + '|' + Users.get(parts[2].trim()).group + Users.get(parts[2].trim()).name + '|' + parts[3].trim());
         }
-    },
+    }, */
 
     clearall: function (target, room, user) {
         if (!this.can('clearall')) return;

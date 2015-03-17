@@ -480,6 +480,7 @@ exports.BattleMovedex = {
 		name: "Light Screen",
 		pp: 30,
 		priority: 0,
+		isSnatchable: true,
 		secondary: false,
 		volatileStatus: 'lightscreen',
 		onTryHit: function (pokemon) {
@@ -654,6 +655,7 @@ exports.BattleMovedex = {
 		name: "Reflect",
 		pp: 20,
 		priority: 0,
+		isSnatchable: true,
 		volatileStatus: 'reflect',
 		onTryHit: function (pokemon) {
 			if (pokemon.volatiles['reflect']) {
@@ -779,6 +781,7 @@ exports.BattleMovedex = {
 		name: "Substitute",
 		pp: 10,
 		priority: 0,
+		isSnatchable: true,
 		volatileStatus: 'Substitute',
 		onTryHit: function (target) {
 			if (target.volatiles['substitute']) {
@@ -855,7 +858,6 @@ exports.BattleMovedex = {
 	},
 	superfang: {
 		inherit: true,
-		affectedByImmunities: false,
 		basePower: 1
 	},
 	thunder: {

@@ -3,12 +3,9 @@ exports.BattleAbilities = {
 		inherit: true,
 		desc: "If this Pokemon, or its Substitute, is struck by a Critical Hit, its Attack is boosted to six stages.",
 		shortDesc: "If this Pokemon is hit by a critical hit, its Attack is boosted by 12.",
-		onAfterSubDamage: function (damage, target, source, move) {
-			if (!target.hp) return;
-			if (move && move.effectType === 'Move' && move.crit) {
-				target.setBoost({atk: 6});
-				this.add('-setboost', target, 'atk', 12, '[from] ability: Anger Point');
-			}
+		onCriticalHit: function (target) {
+			target.setBoost({atk: 6});
+			this.add('-setboost', target, 'atk', 12, '[from] ability: Anger Point');
 		}
 	},
 	"leafguard": {
@@ -21,11 +18,13 @@ exports.BattleAbilities = {
 		}
 	},
 	"lightningrod": {
-		inherit: true,
 		desc: "During double battles, this Pokemon draws any single-target Electric-type attack to itself. If an opponent uses an Electric-type attack that affects multiple Pokemon, those targets will be hit. This ability does not affect Electric Hidden Power or Judgment.",
 		shortDesc: "This Pokemon draws Electric moves to itself.",
-		onTryHit: function () {},
-		rating: 0
+		// drawing not implemented
+		id: "lightningrod",
+		name: "Lightning Rod",
+		rating: 0,
+		num: 32
 	},
 	"magicguard": {
 		//desc: "",
@@ -100,16 +99,6 @@ exports.BattleAbilities = {
 		rating: 0,
 		num: 57
 	},
-	"simple": {
-		shortDesc: "If this Pokemon's stat stages are raised or lowered, the effect is doubled instead.",
-		onModifyBoost: function () {
-			return this.chainModify(2);
-		},
-		id: "simple",
-		name: "Simple",
-		rating: 4,
-		num: 86
-	},
 	"stench": {
 		desc: "No in-battle effect.",
 		shortDesc: "No in-battle effect.",
@@ -119,11 +108,13 @@ exports.BattleAbilities = {
 		num: 1
 	},
 	"stormdrain": {
-		inherit: true,
 		desc: "During double battles, this Pokemon draws any single-target Water-type attack to itself. If an opponent uses an Water-type attack that affects multiple Pokemon, those targets will be hit. This ability does not affect Water Hidden Power, Judgment or Weather Ball.",
 		shortDesc: "This Pokemon draws Water moves to itself.",
-		onTryHit: function () {},
-		rating: 0
+		// drawing not implemented
+		id: "stormdrain",
+		name: "Storm Drain",
+		rating: 0,
+		num: 114
 	},
 	"sturdy": {
 		desc: "This Pokemon is immune to OHKO moves.",

@@ -30,8 +30,8 @@ exports.BattleItems = {
 	belueberry: {
 		inherit: true,
 		naturalGift: {
-			basePower: 80,
-			type: "Electric"
+			basePower: 60,
+			type: "Ice"
 		}
 	},
 	blukberry: {
@@ -99,7 +99,7 @@ exports.BattleItems = {
 		inherit: true,
 		naturalGift: {
 			basePower: 70,
-			type: "Bug"
+			type: "Water"
 		}
 	},
 	custapberry: {
@@ -387,7 +387,7 @@ exports.BattleItems = {
 		inherit: true,
 		naturalGift: {
 			basePower: 70,
-			type: "Ice"
+			type: "Poison"
 		}
 	},
 	psychicgem: {
@@ -399,7 +399,7 @@ exports.BattleItems = {
 		inherit: true,
 		naturalGift: {
 			basePower: 70,
-			type: "Poison"
+			type: "Ghost"
 		}
 	},
 	rawstberry: {

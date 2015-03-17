@@ -2,7 +2,7 @@ exports.BattleMovedex = {
 	acupressure: {
 		inherit: true,
 		desc: "Raises a random stat by 2 stages as long as the stat is not already at stage 6. The user can choose to use this move on itself or an ally. Fails if no stat stage can be raised or if the user or ally has a Substitute. This move ignores Protect and Detect.",
-		flags: {snatch: 1},
+		isSnatchable: true,
 		onHit: function (target) {
 			if (target.volatiles['substitute']) {
 				return false;
@@ -51,7 +51,7 @@ exports.BattleMovedex = {
 	},
 	aquaring: {
 		inherit: true,
-		flags: {}
+		isSnatchable: false
 	},
 	beatup: {
 		inherit: true,
@@ -163,7 +163,7 @@ exports.BattleMovedex = {
 	},
 	conversion: {
 		inherit: true,
-		flags: {}
+		isSnatchable: false
 	},
 	copycat: {
 		inherit: true,
@@ -298,7 +298,10 @@ exports.BattleMovedex = {
 	doomdesire: {
 		inherit: true,
 		accuracy: 85,
-		basePower: 120
+		basePower: 120,
+		onModifyMove: function (move) {
+			move.type = '???';
+		}
 	},
 	drainpunch: {
 		inherit: true,
@@ -437,20 +440,6 @@ exports.BattleMovedex = {
 			return 20;
 		}
 	},
-	focuspunch: {
-		inherit: true,
-		beforeMoveCallback: function () { },
-		onTry: function (pokemon) {
-			if (!pokemon.removeVolatile('focuspunch')) {
-				return;
-			}
-			if (pokemon.lastAttackedBy && pokemon.lastAttackedBy.damage && pokemon.lastAttackedBy.thisTurn) {
-				this.attrLastMove('[still]');
-				this.add('cant', pokemon, 'Focus Punch', 'Focus Punch');
-				return false;
-			}
-		}
-	},
 	foresight: {
 		inherit: true,
 		isBounceable: false
@@ -463,7 +452,10 @@ exports.BattleMovedex = {
 		inherit: true,
 		accuracy: 90,
 		basePower: 80,
-		pp: 15
+		pp: 15,
+		onModifyMove: function (move) {
+			move.type = '???';
+		}
 	},
 	gigadrain: {
 		inherit: true,
@@ -488,7 +480,7 @@ exports.BattleMovedex = {
 	},
 	healingwish: {
 		inherit: true,
-		flags: {heal: 1},
+		isSnatchable: false,
 		onAfterMove: function (pokemon) {
 			pokemon.switchFlag = true;
 		},
@@ -595,8 +587,7 @@ exports.BattleMovedex = {
 		pp: 20,
 		onMoveFail: function (target, source, move) {
 			var damage = this.getDamage(source, target, move, true);
-			if (!damage) damage = target.maxhp;
-			this.damage(this.clampIntRange(damage / 2, 1, Math.floor(target.maxhp / 2)), source, source, 'highjumpkick');
+			this.damage(this.clampIntRange(damage / 2, 1, Math.floor(target.maxhp / 2)), source);
 		}
 	},
 	iciclespear: {
@@ -605,7 +596,7 @@ exports.BattleMovedex = {
 	},
 	imprison: {
 		inherit: true,
-		flags: {authentic: 1},
+		isSnatchable: false,
 		onTryHit: function (pokemon) {
 			var targets = pokemon.side.foe.active;
 			for (var i = 0; i < targets.length; i++) {
@@ -625,8 +616,7 @@ exports.BattleMovedex = {
 		pp: 25,
 		onMoveFail: function (target, source, move) {
 			var damage = this.getDamage(source, target, move, true);
-			if (!damage) damage = target.maxhp;
-			this.damage(this.clampIntRange(damage / 2, 1, Math.floor(target.maxhp / 2)), source, source, 'jumpkick');
+			this.damage(this.clampIntRange(damage / 2, 1, Math.floor(target.maxhp / 2)), source);
 		}
 	},
 	lastresort: {
@@ -635,11 +625,11 @@ exports.BattleMovedex = {
 	},
 	luckychant: {
 		inherit: true,
-		flags: {}
+		isSnatchable: false
 	},
 	lunardance: {
 		inherit: true,
-		flags: {heal: 1}
+		isSnatchable: false
 	},
 	magiccoat: {
 		inherit: true,
@@ -684,7 +674,7 @@ exports.BattleMovedex = {
 	},
 	magnetrise: {
 		inherit: true,
-		flags: {gravity: 1},
+		isSnatchable: false,
 		volatileStatus: 'magnetrise',
 		effect: {
 			duration: 5,
@@ -756,30 +746,6 @@ exports.BattleMovedex = {
 		inherit: true,
 		isBounceable: false
 	},
-	moonlight: {
-		inherit: true,
-		onHit: function (pokemon) {
-			if (this.isWeather(['sunnyday', 'desolateland'])) {
-				this.heal(pokemon.maxhp * 2 / 3);
-			} else if (this.isWeather(['raindance', 'primordialsea', 'sandstorm', 'hail'])) {
-				this.heal(pokemon.maxhp / 4);
-			} else {
-				this.heal(pokemon.maxhp / 2);
-			}
-		}
-	},
-	morningsun: {
-		inherit: true,
-		onHit: function (pokemon) {
-			if (this.isWeather(['sunnyday', 'desolateland'])) {
-				this.heal(pokemon.maxhp * 2 / 3);
-			} else if (this.isWeather(['raindance', 'primordialsea', 'sandstorm', 'hail'])) {
-				this.heal(pokemon.maxhp / 4);
-			} else {
-				this.heal(pokemon.maxhp / 2);
-			}
-		}
-	},
 	odorsleuth: {
 		inherit: true,
 		isBounceable: false
@@ -809,7 +775,7 @@ exports.BattleMovedex = {
 	},
 	powertrick: {
 		inherit: true,
-		flags: {}
+		isSnatchable: false
 	},
 	protect: {
 		inherit: true,
@@ -841,11 +807,11 @@ exports.BattleMovedex = {
 	},
 	psychup: {
 		inherit: true,
-		flags: {snatch:1, authentic: 1}
+		isSnatchable: true
 	},
 	recycle: {
 		inherit: true,
-		flags: {}
+		isSnatchable: false
 	},
 	reversal: {
 		inherit: true,
@@ -941,23 +907,10 @@ exports.BattleMovedex = {
 	},
 	suckerpunch: {
 		inherit: true,
-		onTry: function (source, target) {
+		onTryHit: function (target) {
 			var decision = this.willMove(target);
-			if (!decision || decision.choice !== 'move' || decision.move.category === 'Status' || target.volatiles.mustrecharge) {
-				this.add('-fail', source);
-				return null;
-			}
-		}
-	},
-	synthesis: {
-		inherit: true,
-		onHit: function (pokemon) {
-			if (this.isWeather(['sunnyday', 'desolateland'])) {
-				this.heal(pokemon.maxhp * 2 / 3);
-			} else if (this.isWeather(['raindance', 'primordialsea', 'sandstorm', 'hail'])) {
-				this.heal(pokemon.maxhp / 4);
-			} else {
-				this.heal(pokemon.maxhp / 2);
+			if (!decision || decision.choice !== 'move' || decision.move.category === 'Status') {
+				return false;
 			}
 		}
 	},
@@ -1064,7 +1017,7 @@ exports.BattleMovedex = {
 		inherit: true,
 		//desc: "",
 		shortDesc: "Next turn, heals 50% of the recipient's max HP.",
-		flags: {heal: 1},
+		isSnatchable: false,
 		sideCondition: 'Wish',
 		effect: {
 			duration: 2,

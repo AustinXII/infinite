@@ -326,15 +326,6 @@ exports.BattleStatuses = {
 					}
 				}
 
-				// Prior to gen 5, these moves had no STAB and no effectiveness.
-				// This is done here and to moveData's type for two reasons:
-				// - modifyMove event happens before the moveHit function is run.
-				// - moveData here is different from move, as one is generated here and the other by the move itself.
-				// So here we centralise any future hit move getting typeless on hit as it should be.
-				if (this.gen < 5) {
-					posData.moveData.type = '???';
-				}
-
 				this.moveHit(target, posData.source, move, posData.moveData);
 
 				this.effectData.positions[i] = null;
@@ -377,13 +368,13 @@ exports.BattleStatuses = {
 		duration: 1,
 		onBasePowerPriority: 8,
 		onBasePower: function (basePower, user, target, move) {
-			var modifier = 0x1547;
+			var modifier = 4 / 3;
 			this.debug('Aura Boost');
 			if (user.volatiles['aurabreak']) {
-				modifier = 0x0C00;
+				modifier = 0.75;
 				this.debug('Aura Boost reverted by Aura Break');
 			}
-			return this.chainModify([modifier, 0x1000]);
+			return this.chainModify(modifier);
 		}
 	},
 
@@ -442,9 +433,6 @@ exports.BattleStatuses = {
 				this.debug('Rain water boost');
 				return this.chainModify(1.5);
 			}
-		},
-		onSetWeather: function (target, source, weather) {
-			if (!(weather.id in {desolateland:1, primordialsea:1, deltastream:1})) return false;
 		},
 		onStart: function () {
 			this.add('-weather', 'PrimordialSea');
@@ -512,9 +500,6 @@ exports.BattleStatuses = {
 				this.debug('Sunny Day fire boost');
 				return this.chainModify(1.5);
 			}
-		},
-		onSetWeather: function (target, source, weather) {
-			if (!(weather.id in {desolateland:1, primordialsea:1, deltastream:1})) return false;
 		},
 		onStart: function () {
 			this.add('-weather', 'DesolateLand');
@@ -605,9 +590,6 @@ exports.BattleStatuses = {
 				this.add('-activate', '', 'deltastream');
 				return 0;
 			}
-		},
-		onSetWeather: function (target, source, weather) {
-			if (!(weather.id in {desolateland:1, primordialsea:1, deltastream:1})) return false;
 		},
 		onStart: function () {
 			this.add('-weather', 'DeltaStream');

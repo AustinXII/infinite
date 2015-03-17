@@ -818,15 +818,10 @@ exports.BattleScripts = {
 			do {
 				item = this.sampleNoReplace(itemPool);
 			} while (this.data.Items[item].isNonstandard);
-			
+
 			// Genesect forms are a sprite difference based on its Drives
 			if (template.species.substr(0, 9) === 'Genesect-' && item !== toId(template.requiredItem)) pokemon = 'Genesect';
-			
-			if (this.getItem(item).megaStone) {
-				// we'll exclude mega stones for now
-				item = items[this.random(items.length)];
-			}
-			
+
 			// Random unique ability
 			var ability = '';
 			do {
@@ -1053,11 +1048,9 @@ exports.BattleScripts = {
 				typeCombo = set.ability;
 			}
 			if (typeCombo in typeComboCount) continue;
-		
-			if (this.getItem(item).megaStone) {
-				// we'll exclude mega stones for now
-				item = items[this.random(items.length)];
-			}
+
+			// Limit the number of Megas to one, just like in-game
+			if (this.getItem(set.item).megaStone && megaCount > 0) continue;
 
 			// Limit to one of each species (Species Clause)
 			if (baseFormes[template.baseSpecies]) continue;

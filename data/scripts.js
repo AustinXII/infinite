@@ -2671,6 +2671,8 @@ exports.BattleScripts = {
 			if (abilities.indexOf('Intimidate') > -1 || template.id === 'mawilemega') {
 				ability = 'Intimidate';
 			}
+			if (abilities.indexOf('Skill Link') >= 0 && ability !== 'Technician' && hasMove['rockblast', 'bulletseed', 'tailslap']) {
+				ability = 'Skill Link';
 		}
 
 		// Make EVs comply with the sets.
